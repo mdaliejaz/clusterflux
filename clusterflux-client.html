@@ -1,0 +1,236 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <title>Clusterflux Client · GitBook</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.0">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    
+    <link rel="prev" href="./" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2" data-path="clusterflux-client.html">
+            
+                <a href="clusterflux-client.html">
+            
+                    
+                    Clusterflux Client
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Clusterflux Client</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="introduction">Introduction</h1><p>The Clusterflux Service (<code>cflux.Client</code>) is a wrapper on InfluxDB&apos;s <code>meta.Client</code>. The wrapper, while wraps some of the methods of <code>meta.Client</code> to implement the Clusterflux service, uses the existing implementations for all the methods; thus not introducing any new behavior to the InfluxDB itself. This wrapper service is responsible for registering the InfluxDB node in the cluster and for sending a heartbeat to the Clusterflux manager reporting it&apos;s alive status. Also, the service syncs the InfluxDB metadata with the remote Clusterflux manager. All http requests from the node to the remote manager is done with exponential backoff to avoid overwhelming the manager. A total of 5 attempts are made before reporting failure to connect.</p><h2 id="node-registration-and-heartbeat">Node Registration and Heartbeat</h2><p>When a new InfluxDB node comes up, it checks the environment variables called <code>CLUSTER</code> and <code>CFLUX_ENDPOINT</code>. It uses the <code>CLUSTER</code> variable to register to the specified cluster. If no value is specified, it registers to a cluster named <code>default</code>. The <code>CFLUX_ENDPOINT</code> environment variable specifies the address of the remote Clusterflux manager. This address could be the load balancer&apos;s (for the Clusterflux managers) address or address of any one of the managers. These environment variables can be set through a configuration file or through the commandline itself.</p><p>The service reads the hostname and IP addresses of the InfluxDB machine and reports this metadata to the Clusterflux manager for book keeping. In future, this service will also report the bind address of the machine for the service-manager communication. Currently the bind address is set to the remote address of the http request sent from the node. Once the Clusterflux receives the node data sent by InfluxDB node, it creates a unique key for this node. This unique key (node ID) is then used for the heartbeat and all future communications. A heartbeat with this node ID is sent every 5 seconds to the Clusterflux manager reporting the alive status for the node.</p><h2 id="cluster-sync-service">Cluster Sync Service</h2><p>The <code>cflux.Client</code> starts a sync service for the InfluxDB metadata syncing. It makes a http GET request to the manager with it&apos;s cluster name and current version of local metadata. The manager returns an updated metadata (with the new version) if the version reported in the request was older than the version on remote. If no new changes are found on remote in an interval of 5 minutes, the clusterflux manager sends a Gateway Timeout (to be changed to 204 - No content), a new request is made from the service.</p><h2 id="updating-remote-metadata">Updating remote metadata</h2><p>On any local changes to the InfluxDB metadata, a new database metadata snapshot is pushed to the cluster. The metadata version is maintained by the local as well as the remote Clusterflux manager. If the remote metadata is higher than the local version, the local metadata is updated followed by applying the new changes on the updated metadata. A retry to update the remote is then made. The Clusterflux manager on receiving a new update, updates it&apos;s metadata and version, notifying other InfluxDB nodes to update themselves.</p>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="./" class="navigation navigation-prev navigation-unique" aria-label="Previous page: Introduction">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Clusterflux Client","level":"1.2","depth":1,"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"clusterflux-client.md","mtime":"2016-08-08T18:10:39.000Z","type":"markdown"},"gitbook":{"version":"3.2.0","time":"2016-08-08T18:21:07.952Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
