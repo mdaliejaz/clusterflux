@@ -57,8 +57,10 @@
     <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="Clusterflux.html" />
+    <link rel="next" href="api.html" />
     
+    
+    <link rel="prev" href="./" />
     
 
     </head>
@@ -87,7 +89,7 @@
         
         
     
-        <li class="chapter active" data-level="1.1" data-path="./">
+        <li class="chapter " data-level="1.1" data-path="./">
             
                 <a href="./">
             
@@ -100,7 +102,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.2" data-path="Clusterflux.html">
+        <li class="chapter active" data-level="1.2" data-path="Clusterflux.html">
             
                 <a href="Clusterflux.html">
             
@@ -184,7 +186,7 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="introduction"><strong>Introduction</strong></h1>
+                                <h1 id="introduction"><strong>Introduction</strong></h1><p>Clusterflux is a distributed InfluxDB node management and distribution library built entirely in Go. Clusterflux enables InfluxDB to operated in a distributed clustered environment. Clusterflux registers/deregisters InfluxDB nodes, syncs metadata across InfluxDB nodes, and enables InfluxDB nodes to read/write data peer to peer.</p><p>Using the <a href="https://revision.aeip.apigee.net/monitoring/clusterflux" target="_blank">Clusterflux Service</a> library, InfluxDB automatically communicates with Clusterflux through an http API. Clusterflux stores InfluxDB metadata as well as node info in a distributed key-value store called <a href="https://github.com/coreos/etcd" target="_blank">etcd</a>.</p><h2 id="setup"><strong>Setup</strong></h2><p>The Clusterflux Manager requires etcd and Docker to be set up.</p><p>For easiest setup, install Kubernetes and use the etcd.yaml file provided to start up three instances of etcd. The Clusterflux yaml files can be used to start Clusterflux pods/deployments/services. All environment variables can be modified inside of meta.go or through the command line.</p>
                                 
                                 </section>
                             
@@ -211,8 +213,12 @@
 
             
                 
+                <a href="./" class="navigation navigation-prev " aria-label="Previous page: Introduction">
+                    <i class="fa fa-angle-left"></i>
+                </a>
                 
-                <a href="Clusterflux.html" class="navigation navigation-next navigation-unique" aria-label="Next page: Introduction">
+                
+                <a href="api.html" class="navigation navigation-next " aria-label="Next page: API">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -223,7 +229,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Introduction","level":"1.1","depth":1,"next":{"title":"Introduction","level":"1.2","depth":1,"path":"Clusterflux.md","ref":"Clusterflux.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"README.md","mtime":"2016-08-10T18:01:14.000Z","type":"markdown"},"gitbook":{"version":"3.2.0","time":"2016-08-10T18:01:24.201Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Introduction","level":"1.2","depth":1,"next":{"title":"API","level":"1.3","depth":1,"path":"api.md","ref":"api.md","articles":[]},"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"Clusterflux.md","mtime":"2016-08-10T18:01:14.000Z","type":"markdown"},"gitbook":{"version":"3.2.0","time":"2016-08-10T18:01:24.201Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
