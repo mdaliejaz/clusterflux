@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html lang="" >
     <head>
-        <title>API · GitBook</title>
+        <title>Design Decisions · GitBook</title>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -57,10 +57,10 @@
     <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="clusterflux-client.html" />
+    <link rel="next" href="pending.html" />
     
     
-    <link rel="prev" href="./" />
+    <link rel="prev" href="clusterflux-client.html" />
     
 
     </head>
@@ -102,7 +102,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.2" data-path="api.html">
+        <li class="chapter " data-level="1.2" data-path="api.html">
             
                 <a href="api.html">
             
@@ -128,7 +128,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4" data-path="decisions.html">
+        <li class="chapter active" data-level="1.4" data-path="decisions.html">
             
                 <a href="decisions.html">
             
@@ -184,7 +184,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href="." >API</a>
+        <a href="." >Design Decisions</a>
     </h1>
 </div>
 
@@ -199,37 +199,7 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="introduction">Introduction</h1><p>Following are the list of APIs that ClusterFlux application provides to the InfluxDB nodes.</p><h2 id="register">Register</h2><p><code>/nodes/{cluster}</code></p><p>Registers an InfluxDB node with a specified cluster assigns an ID, and stores influxDB metadata and node data in etcd with a default time to live set for 15 seconds.</p><p>Automatically called from ClusterFlux Service when InfluxDB starts up.</p><h2 id="deregister">Deregister</h2><p><code>/nodes/{cluster}/{id}</code></p><p>Deregisters and deletes InfluxDB node data with a specified cluster and id from etcd.</p><h2 id="refresh">Refresh</h2><p><code>/nodes/{cluster}/{id}</code></p><p>Refreshes the time to live (TTL) for an InfluxDB node with {cluster} and {id}.</p><p>Automatically called from ClusterFlux Service every 10 seconds to tell ClusterFlux manager that the node is alive.</p><h2 id="list">List</h2><p><code>/nodes</code></p><p>Lists all InfluxDB nodes and ClusterFlux nodes</p><pre><code>{
-    &quot;cflux&quot;: [
-    {
-        &quot;id&quot;: 8278,
-        &quot;ip&quot;: &quot;192.168.64.1,10.224.16.214,&quot;,
-        &quot;hostname&quot;: &quot;cflux-host&quot;,
-        &quot;bind-address&quot;: &quot;10.224.16.214:8000&quot;,
-        &quot;alive&quot;: true
-    }
-    ],
-    &quot;influx&quot;: [
-    {
-        &quot;id&quot;: 8319,
-        &quot;ip&quot;: &quot;10.224.16.214,&quot;,
-        &quot;hostname&quot;: &quot;influx-host&quot;,
-        &quot;bind-address&quot;: &quot;10.224.16.214:8888&quot;,
-        &quot;alive&quot;: true
-    }
-    ]
-}</code></pre>
-<h2 id="cluster">Cluster</h2><p><code>/nodes/{cluster}</code></p><p>Lists all InfluxDB nodes in a specfied cluster.</p><pre><code>[
-     {
-       &quot;id&quot;: 8319,
-       &quot;ip&quot;: &quot;10.224.16.214,&quot;,
-       &quot;hostname&quot;: &quot;influx-host&quot;,
-       &quot;bind-address&quot;: &quot;10.224.16.214:8888&quot;,
-       &quot;alive&quot;: true
-    }
-]
-</code></pre>
-<h2 id="write">Write</h2><p><code>/clusters/{cluster}/versions/{version}</code></p><p>Writes InfluxDB metadata from a specified cluster with a specified version.  Uses etcd&apos;s prevIndex option. This allows a user to specify what version the metadata should be, so that old versions do not rewrite new versions. On a successful write, the version is incremented from inside the ClusterFlux Manager. If an old version tries to write over a newer version, ClusterFlux will return the most recent version of the metadata to the node requesting to update.</p><h2 id="read">Read</h2><p><code>/clusters/{cluster}/versions/{version}</code></p><p>Reads metadata from a specified cluster and version. Read uses etcd&apos;s watcher to track changes on a specific data version. If a version is updated, the new metadata automatically gets returned.</p>
+                                <h1 id="introduction">Introduction</h1><p>This file contains design decisions that are difficult to explain through code.</p><h2 id="cluster-read">Cluster Read</h2><p>Do a Get before Watcher. In ClusterFlux Application we do an extra Get before starting the watcher for long polling on updates.</p><p>Reason: The Watcher can be set to watch after some index, but the influxDB node&#x2019;s index might be too old for etcd to remember. Etcd keeps track of only a limited amount of history across all nodes. On the other hand if we use &#x2018;start from the current index&#x2019;, we might be waiting for the next update even if there&#x2019;s an update upstream; if influxDB is version 2 and remote cluster is at version 4 and if we start watching from current version (=4) we won&#x2019;t update influxDB unless a version 5 comes in. So the best approach would be to do a Get and check for version mismatch. If there&#x2019;s a version mismatch, return with the update, if not, start the watcher.</p><h2 id="extra-post-to-remote-on-starting-service">Extra post to remote on starting service</h2><p>Currently we do an extra Post to ClusterFlux when Open() method of ClusterFlux Client is called. This is done to create a key in Etcd. If this is not done, the ClusterFlux sync service (service that polls for updates) starts throwing key not found; if this is the first node coming up in a new cluster.</p>
                                 
                                 </section>
                             
@@ -256,12 +226,12 @@
 
             
                 
-                <a href="./" class="navigation navigation-prev " aria-label="Previous page: Introduction">
+                <a href="clusterflux-client.html" class="navigation navigation-prev " aria-label="Previous page: Clusterflux Client">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="clusterflux-client.html" class="navigation navigation-next " aria-label="Next page: Clusterflux Client">
+                <a href="pending.html" class="navigation navigation-next " aria-label="Next page: Pending Work">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -272,7 +242,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"API","level":"1.2","depth":1,"next":{"title":"Clusterflux Client","level":"1.3","depth":1,"path":"clusterflux-client.md","ref":"clusterflux-client.md","articles":[]},"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"api.md","mtime":"2016-08-18T21:08:25.000Z","type":"markdown"},"gitbook":{"version":"3.2.0","time":"2016-08-19T18:04:38.959Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Design Decisions","level":"1.4","depth":1,"next":{"title":"Pending Work","level":"1.5","depth":1,"path":"pending.md","ref":"pending.md","articles":[]},"previous":{"title":"Clusterflux Client","level":"1.3","depth":1,"path":"clusterflux-client.md","ref":"clusterflux-client.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"decisions.md","mtime":"2016-08-18T21:53:36.000Z","type":"markdown"},"gitbook":{"version":"3.2.0","time":"2016-08-19T18:04:38.959Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
